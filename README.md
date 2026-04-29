@@ -45,14 +45,20 @@ sudo apt install -y kubelet kubeadm kubectl
 sudo systemctl enable --now kubelet
 ```
 
-- [_Cluster_](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/) com suporte a [pilha dupla](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/dual-stack-support/):
+- [_Cluster_](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/) com suporte a [pilha dupla](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/dual-stack-support/) e [alta disponibilidade](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/):
 
 ```sh
-kubeadm init --v=5 --control-plane-endpoint=k8s-0.sj.ifsc.edu.br --pod-network-cidr=10.0.0.0/16,fc00::/56 --service-cidr=10.1.0.0/16,fc00:1::/112
+kubeadm init --v=5 --control-plane-endpoint=k8s.sj.ifsc.edu.br --pod-network-cidr=10.0.0.0/16,fc00::/56 --service-cidr=10.1.0.0/16,fc00:1::/112 --upload-certs
 ```
 
 - Ativação dos nós (_workers_):
 
 ```sh
 kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+```
+
+- Instalação de [_add-on_ de rede (CNI)](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network):
+
+```sh
+# ...
 ```
