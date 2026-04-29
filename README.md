@@ -2,35 +2,39 @@
 
 ## Nuvem Kubernetes
 
-Sistema operacional: Ubuntu 26.04 LTS.
+- Sistema operacional: Ubuntu 26.04 LTS.
 
-Atualização do sistema:
+- Atualização do sistema:
 
 ```sh
-echo 'Acquire::ForceIPv4 "true";' | sudo tee /etc/apt/apt.conf.d/99force-ipv4
+echo 'Acquire::ForceIPv4 "true";' | sudo tee /etc/apt/apt.conf.d/99force-ipv4 > /dev/null
 sudo apt update
 sudo apt upgrade -y
 sudo apt dist-upgrade -y
-sudo do-release-upgrade -d
-sudo apt --purge autoremove
+sudo do-release-upgrade
+sudo apt autopurge
+sudo apt clean
 sudo reboot
 ```
 
 ### Instalação
 
-CRI ([fonte](https://kubernetes.io/docs/setup/production-environment/container-runtimes/)):
+- [CRI](https://kubernetes.io/docs/setup/production-environment/container-runtimes/):
 
 ```sh
 sudo apt install -y containerd
+sudo install -d /etc/containerd
+containerd config default | sed 's/SystemdCgroup = false/SystemdCgroup = true/g' |sudo tee /etc/containerd/config.toml > /dev/null
+sudo systemctl restart containerd
 
-cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf > /dev/null
 net.ipv4.conf.all.forwarding = 1
 net.ipv6.conf.all.forwarding = 1
 EOF
 sudo sysctl --system
 ```
 
-Ferramentas ([fonte](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/)):
+- [Ferramentas](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/):
 
 ```sh
 sudo apt install -y apt-transport-https ca-certificates curl gpg
@@ -41,8 +45,14 @@ sudo apt install -y kubelet kubeadm kubectl
 sudo systemctl enable --now kubelet
 ```
 
-Cluster ([fonte](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/)):
+- [_Cluster_](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/) com suporte a [pilha dupla](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/dual-stack-support/):
 
 ```sh
-# ...
+kubeadm init --v=5 --control-plane-endpoint=k8s-0.sj.ifsc.edu.br --pod-network-cidr=10.0.0.0/16,fc00::/56 --service-cidr=10.1.0.0/16,fc00:1::/112
+```
+
+- Ativação dos nós (_workers_):
+
+```sh
+kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 ```
