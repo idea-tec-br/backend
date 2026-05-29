@@ -61,7 +61,7 @@ sudo systemctl enable --now kubelet
 
 ```sh
 # Criação do cluster
-sudo kubeadm init --v=5 --control-plane-endpoint=k8s.sj.ifsc.edu.br --pod-network-cidr=10.0.0.0/16,fc00::/56 --service-cidr=10.1.0.0/16,fc00:1::/112 --upload-certs
+sudo kubeadm init --v=5 --control-plane-endpoint=k8s.sj.ifsc.edu.br --pod-network-cidr=10.0.0.0/16,fc00::/64 --service-cidr=10.1.0.0/16,fc00:1::/112 --upload-certs
 ```
 
 As ações a serem feitas nos outros _control planes_ serão informadas no final desse comando.
@@ -95,7 +95,17 @@ sudo tar xzvfC hubble-linux-${HUBBLE_ARCH}.tar.gz /usr/local/bin
 rm hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
 #
 # Instalação do Cilium
-cilium install --version 1.19.3
+cilium install \
+  --helm-set ipv4.enabled=true \
+  --helm-set ipv6.enabled=true \
+  --helm-set ipv4.nativeRoutingCIDR="10.0.0.0/16" \
+  --helm-set ipv6.nativeRoutingCIDR="fc00::/64" \
+  --helm-set ipam.operator.clusterPoolIPv4PodCIDRList="10.0.0.0/16" \
+  --helm-set ipam.operator.clusterPoolIPv6PodCIDRList="fc00::/64"
+
+
+
+
 cilium hubble enable
 #
 # Verificação
@@ -106,3 +116,24 @@ hubble observe -P
 # Teste
 cilium connectivity test
 ```
+
+* Instalação do [Longhorn](https://longhorn.io/) para armazenamento:
+
+```sh
+sudo apt install -y open-iscsi nfs-common util-linux
+sudo systemctl enable --now iscsid
+
+sudo modprobe iscsi_tcp
+echo "iscsi_tcp" | sudo tee /etc/modules-load.d/iscsi.conf
+
+kubectl apply -f curl -sSfL https://raw.githubusercontent.com/longhorn/longhorn/master/scripts/environment_check.sh | bash
+```
+
+* Instalação do API Gateway
+
+```sh
+kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/latest/download/standard-install.yaml
+kubectl -n longhorn-system port-forward svc/longhorn-frontend 8080:80
+xdg-open http://localhost:8080
+```
+
