@@ -7,9 +7,6 @@
 - Atualização do sistema:
 
 ```sh
-# Preferência por IPv4
-echo 'Acquire::ForceIPv4 "true";' | sudo tee /etc/apt/apt.conf.d/99force-ipv4 > /dev/null
-#
 # Atualização
 sudo apt update
 sudo apt upgrade -y
@@ -61,7 +58,7 @@ sudo systemctl enable --now kubelet
 
 ```sh
 # Criação do cluster
-sudo kubeadm init --v=5 --control-plane-endpoint=k8s.sj.ifsc.edu.br --pod-network-cidr=10.0.0.0/16,fc00::/112 --service-cidr=10.1.0.0/16,fc00:1::/112 --upload-certs
+sudo kubeadm init --v=5 --control-plane-endpoint=k8s.sj.ifsc.edu.br --pod-network-cidr=10.0.0.0/16,fc00::/56 --service-cidr=10.1.0.0/16,fd00::/112 --upload-certs
 ```
 
 As ações a serem feitas nos outros _control planes_ serão informadas no final desse comando.
@@ -96,9 +93,14 @@ rm hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
 #
 # Instalação do Cilium
 cilium install \
-  --helm-set ipv4.enabled=true \
-  --helm-set ipv6.enabled=true \
-  --set ipam.mode=cluster-pool
+  --set ipv4.enabled=true \
+  --set ipv6.enabled=true \
+  --set ipam.mode=kubernetes \
+  --set ipam.operator.clusterPoolIPv4PodCIDRList="10.0.0.0/16" \
+  --set ipam.operator.clusterPoolIPv6PodCIDRList="fc00::/56" \
+  --set ipv4NativeRoutingCIDR="10.1.0.0/16" \
+  --set ipv6NativeRoutingCIDR="fd00::/112" \
+  --set kubeProxyReplacement=true
 cilium hubble enable
 #
 # Verificação
