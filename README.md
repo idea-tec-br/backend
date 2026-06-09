@@ -61,7 +61,7 @@ sudo systemctl enable --now kubelet
 
 ```sh
 # Criação do cluster
-sudo kubeadm init --v=5 --control-plane-endpoint=k8s.sj.ifsc.edu.br --pod-network-cidr=10.0.0.0/16,fc00::/64 --service-cidr=10.1.0.0/16,fc00:1::/112 --upload-certs
+sudo kubeadm init --v=5 --control-plane-endpoint=k8s.sj.ifsc.edu.br --pod-network-cidr=10.0.0.0/16,fc00::/112 --service-cidr=10.1.0.0/16,fc00:1::/112 --upload-certs
 ```
 
 As ações a serem feitas nos outros _control planes_ serão informadas no final desse comando.
@@ -98,14 +98,7 @@ rm hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
 cilium install \
   --helm-set ipv4.enabled=true \
   --helm-set ipv6.enabled=true \
-  --helm-set ipv4.nativeRoutingCIDR="10.0.0.0/16" \
-  --helm-set ipv6.nativeRoutingCIDR="fc00::/64" \
-  --helm-set ipam.operator.clusterPoolIPv4PodCIDRList="10.0.0.0/16" \
-  --helm-set ipam.operator.clusterPoolIPv6PodCIDRList="fc00::/64"
-
-
-
-
+  --set ipam.mode=cluster-pool
 cilium hubble enable
 #
 # Verificação
