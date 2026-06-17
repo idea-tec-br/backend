@@ -132,8 +132,10 @@ cilium install \
   --set ipv4.enabled=true \
   --set ipv6.enabled=true \
   --set ipam.mode=kubernetes \
+  --set kubeProxyReplacement=true \
+  --set gatewayAPI.enabled=true \  
   --set ipam.operator.clusterPoolIPv4PodCIDRList="10.0.0.0/16" \
-  --set ipam.operator.clusterPoolIPv6PodCIDRList="fc00::/56" \
+  --set ipam.operator.clusterPoolIPv6PodCIDRList="fc00::/64" \
   --set ipv4NativeRoutingCIDR="10.1.0.0/16" \
   --set ipv6NativeRoutingCIDR="fd00::/112" \
   --set kubeProxyReplacement=true
