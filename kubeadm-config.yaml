@@ -1,0 +1,23 @@
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: ClusterConfiguration
+clusterName: kubernetes
+apiServer:
+  certSANs:
+  - "k8s-0.sj.ifsc.edu.br"
+  - "191.36.14.237"
+  - "2804:1454:1004:103::237"
+  extraArgs:
+  - name: "bind-address"
+    value: "::"
+networking:
+  dnsDomain: cluster.local
+  podSubnet: "10.0.0.0/16,fc00::/64"
+  serviceSubnet: "10.1.0.0/16,fd00::/112"
+---
+apiVersion: kubeadm.k8s.io/v1beta4
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: "191.36.14.237"
+  bindPort: 6443
+nodeRegistration:
+  name: k8s-0.sj.ifsc.edu.br
