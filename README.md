@@ -80,7 +80,6 @@ Todas as máquinas:
 
 ```sh
 sudo apt install -y kubelet
-echo "KUBELET_EXTRA_ARGS=\"--node-ip=`hostname -I|sed  's/\ /,/'|xargs`\"" | sudo tee /etc/default/kubelet
 sudo systemctl enable --now kubelet
 sudo systemctl restart kubelet
 ```
@@ -95,18 +94,23 @@ Apenas na primeira máquina:
 sudo kubeadm init --v=5 --config=kubeadm-config.yaml
 ```
 
-As ações a serem feitas nos outros _control planes_ serão informadas no final desse comando.
+Para as demais máquinas, deve-se atualizar o arquivo do `kubeadm` com os valores informados pelo comando anterior e depois rodar:
 
-### Ativação dos nós (_control planes_ como _workers_)
+```sh
+sudo kubeadm join --v=5 --config=kubeadm-config.yaml
+```
+
+### CRDs do Gateway API
 
 Apenas na primeira máquina:
 
 ```sh
-# Ativação dos control planes
-kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.1/experimental-install.yaml
 ```
 
-- Instalação de [_add-on_ de rede (CNI)](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network) [Cilium](https://docs.cilium.io/en/stable/gettingstarted/k8s-install-default/) com [Hubble](https://docs.cilium.io/en/stable/observability/hubble/setup/#hubble-setup) ativado:
+### Instalação de [_add-on_ de rede (CNI)](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network) [Cilium](https://docs.cilium.io/en/stable/gettingstarted/k8s-install-default/) com [Hubble](https://docs.cilium.io/en/stable/observability/hubble/setup/#hubble-setup)
+
+Apenas na primeira máquina:
 
 ```sh
 # Instalação do Cilium CLI
@@ -133,12 +137,7 @@ cilium install \
   --set ipv6.enabled=true \
   --set ipam.mode=kubernetes \
   --set kubeProxyReplacement=true \
-  --set gatewayAPI.enabled=true \  
-  --set ipam.operator.clusterPoolIPv4PodCIDRList="10.0.0.0/16" \
-  --set ipam.operator.clusterPoolIPv6PodCIDRList="fc00::/64" \
-  --set ipv4NativeRoutingCIDR="10.1.0.0/16" \
-  --set ipv6NativeRoutingCIDR="fd00::/112" \
-  --set kubeProxyReplacement=true
+  --set gatewayAPI.enabled=true
 cilium hubble enable
 #
 # Verificação
@@ -161,12 +160,3 @@ sudo systemctl enable --now iscsid
 sudo modprobe iscsi_tcp
 echo "iscsi_tcp" | sudo tee /etc/modules-load.d/iscsi.conf
 ```
-
-* Instalação do API Gateway
-
-```sh
-kubectl apply -f https://github.com/kubernetes-sigs/gateway-api/releases/latest/download/standard-install.yaml
-kubectl -n longhorn-system port-forward svc/longhorn-frontend 8080:80
-xdg-open http://localhost:8080
-```
-
