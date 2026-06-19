@@ -99,7 +99,7 @@ sudo kubeadm join --v=5 --config=kubeadm-config.yaml
 Apenas na primeira máquina:
 
 ```sh
-kubectl taint nodes k8s-0.sj.ifsc.edu.br node-role.kubernetes.io/control-plane:NoSchedule-
+kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule-
 ```
 
 ### Gateway API
@@ -153,10 +153,20 @@ cilium connectivity test
 Todas as máquinas:
 
 ```sh
-sudo apt install -y open-iscsi nfs-common util-linux
+sudo apt install -y open-iscsi nfs-common util-linux cryptsetup dmsetup
 sudo systemctl enable --now iscsid
 sudo modprobe iscsi_tcp
 echo "iscsi_tcp" | sudo tee /etc/modules-load.d/iscsi.conf
+```
+
+Apenas a primeira máquina:
+
+```sh
+kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.12.0/deploy/longhorn.yaml
+#
+curl -sSfL -o longhornctl https://github.com/longhorn/cli/releases/download/v1.12.0/longhornctl-linux-amd64
+chmod 755 longhornctl 
+sudo mv longhornctl /usr/local/bin
 ```
 
 ### K9s
