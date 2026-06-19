@@ -154,3 +154,11 @@ sudo systemctl enable --now iscsid
 sudo modprobe iscsi_tcp
 echo "iscsi_tcp" | sudo tee /etc/modules-load.d/iscsi.conf
 ```
+
+### K9s
+
+```sh
+curl -LO https://github.com/derailed/k9s/releases/download/v0.51.0/k9s_linux_amd64.deb
+sudo dpkg -i k9s_linux_amd64.deb
+rm -f k9s_linux_amd64.deb
+```
