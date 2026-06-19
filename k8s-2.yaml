@@ -11,3 +11,5 @@ nodeRegistration:
   kubeletExtraArgs:
   - name: "node-ip"
     value: "2804:1454:1004:103::239,191.36.14.239"
+  - name: "resolv-conf"
+    value: "/etc/k8s-resolv.conf"

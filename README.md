@@ -43,6 +43,12 @@ net.ipv6.conf.all.forwarding        = 1
 net.ipv6.conf.default.forwarding    = 1
 EOF
 sudo sysctl --system
+#
+cat <<EOF | sudo tee /etc/k8s-resolv.conf
+nameserver 2606:4700:4700::1111
+nameserver 2606:4700:4700::1001
+nameserver 1.1.1.1
+EOF
 ```
 
 ### Instalação
