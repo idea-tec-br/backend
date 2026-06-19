@@ -1,9 +1,13 @@
 apiVersion: kubeadm.k8s.io/v1beta4
 kind: ClusterConfiguration
 clusterName: kubernetes
+controlPlaneEndpoint: "k8s.sj.ifsc.edu.br:6443"
 apiServer:
   certSANs:
+  - "k8s.sj.ifsc.edu.br"
   - "k8s-0.sj.ifsc.edu.br"
+  - "k8s-1.sj.ifsc.edu.br"
+  - "k8s-2.sj.ifsc.edu.br"
   extraArgs:
   - name: "bind-address"
     value: "::"

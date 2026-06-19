@@ -49,9 +49,10 @@ nameserver 2606:4700:4700::1111
 nameserver 2606:4700:4700::1001
 nameserver 1.1.1.1
 EOF
-# 
-sudo apt-get install -y ethtool
-sudo ethtool -K eth0 tx off rx off
+#
+echo "      transmit-checksum-offload: false" | sudo tee -a /etc/netplan/50-cloud-init.yaml
+echo "      receive-checksum-offload: false" | sudo tee -a /etc/netplan/50-cloud-init.yaml
+sudo netplan apply
 ```
 
 ### CRI: containerd
@@ -86,14 +87,19 @@ sudo systemctl restart kubelet
 Apenas na primeira máquina:
 
 ```sh
-sudo kubeadm init --v=5 --config=kubeadm-config.yaml
-kubectl taint nodes k8s-0.sj.ifsc.edu.br node-role.kubernetes.io/control-plane:NoSchedule-
+sudo kubeadm init --v=5 --config=kubeadm-config.yaml --upload-certs
 ```
 
-Para as demais máquinas, deve-se atualizar o arquivo do `kubeadm` com os valores informados pelo comando anterior e depois rodar:
+Ns demais máquinas, deve-se atualizar o arquivo do `kubeadm` com os valores informados pelo comando anterior e depois rodar:
 
 ```sh
 sudo kubeadm join --v=5 --config=kubeadm-config.yaml
+```
+
+Apenas na primeira máquina:
+
+```sh
+kubectl taint nodes k8s-0.sj.ifsc.edu.br node-role.kubernetes.io/control-plane:NoSchedule-
 ```
 
 ### Gateway API
@@ -130,14 +136,12 @@ cilium install \
   --set ipv4.enabled=true \
   --set kubeProxyReplacement=true \
   --set gatewayAPI.enabled=true \
-  --set ipam.mode=cluster-pool \
-  --set ipam.operator.clusterPoolIPv6PodCIDRList='{fc00::/48}' \
-  --set ipam.operator.clusterPoolIPv6MaskSize=64 \
-  --set ipam.operator.clusterPoolIPv4PodCIDRList='{10.0.0.0/16}' \
-  --set ipam.operator.clusterPoolIPv4MaskSize=24
-cilium hubble enable
+  --set ipam.mode=kubernetes
+kubectl delete daemonset kube-proxy -n kube-system
 #
 cilium status --wait
+#
+cilium hubble enable
 hubble status -P
 hubble observe -P
 #

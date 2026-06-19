@@ -3,9 +3,14 @@ kind: JoinConfiguration
 discovery:
   bootstrapToken:
     token: "<token>"
-    apiServerEndpoint: "[2804:1454:1004:103::237]:6443"
+    apiServerEndpoint: "k8s.sj.ifsc.edu.br:6443"
     caCertHashes:
     - "<sha256>"
+controlPlane:
+  localAPIEndpoint:
+    advertiseAddress: "2804:1454:1004:103::238"
+    bindPort: 6443
+  certificateKey: "chave-longa-gerada-pelo-upload-certs"
 nodeRegistration:
   name: k8s-1.sj.ifsc.edu.br
   kubeletExtraArgs:
