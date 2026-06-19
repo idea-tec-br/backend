@@ -9,7 +9,7 @@ apiServer:
     value: "::"
 networking:
   dnsDomain: cluster.local
-  podSubnet: "fc00::/64,10.0.0.0/16"
+  podSubnet: "fc00::/48,10.0.0.0/16"
   serviceSubnet: "fd00::/112,10.1.0.0/16"
 ---
 apiVersion: kubeadm.k8s.io/v1beta4
