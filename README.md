@@ -148,6 +148,14 @@ hubble observe -P
 cilium connectivity test
 ```
 
+### [cert-manager](https://cert-manager.io/docs/installation/kubectl/)
+
+Apenas na primeira máquina:
+
+```sh
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.20.2/cert-manager.yaml
+```
+
 ### SDS: [Longhorn](https://longhorn.io/)
 
 Todas as máquinas:
