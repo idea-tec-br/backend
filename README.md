@@ -102,6 +102,14 @@ Apenas na primeira máquina:
 kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule-
 ```
 
+### Helm
+
+Apenas na primeira máquina:
+
+```sh
+curl -fsSL  https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4 | bash -
+```
+
 ### Gateway API
 
 Apenas na primeira máquina:
@@ -153,7 +161,13 @@ cilium connectivity test
 Apenas na primeira máquina:
 
 ```sh
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.20.2/cert-manager.yaml
+helm install \
+  cert-manager oci://quay.io/jetstack/charts/cert-manager \
+  --version v1.20.2 \
+  --namespace cert-manager \
+  --create-namespace \
+  --set crds.enabled=true \
+  --set "extraArgs={--enable-gateway-api}"
 ```
 
 ### SDS: [Longhorn](https://longhorn.io/)
