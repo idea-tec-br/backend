@@ -156,18 +156,22 @@ hubble observe -P
 cilium connectivity test
 ```
 
-### [cert-manager](https://cert-manager.io/docs/installation/kubectl/)
+### Criação do certificado digital único
 
 Apenas na primeira máquina:
 
 ```sh
-helm install \
-  cert-manager oci://quay.io/jetstack/charts/cert-manager \
-  --version v1.20.2 \
-  --namespace cert-manager \
-  --create-namespace \
-  --set crds.enabled=true \
-  --set "extraArgs={--enable-gateway-api}"
+sudo apt install certbot
+sudo certbot certonly --manual --preferred-challenges dns --email etorresini@ifsc.edu.br --agree-tos -d 'k8s.sj.ifsc.edu.br' -d '*.k8s.sj.ifsc.edu.br'
+```
+
+No processo, será criado um registro DNS para ser adicionado no servidor, o que permitirá criar o certificado digital. Uma vez criado, rodar na primeira máquina:
+
+```sh
+kubectl create secret tls wildcard-k8s-ifsc-tls \
+  --cert=/etc/letsencrypt/live/k8s.sj.ifsc.edu.br/fullchain.pem \
+  --key=/etc/letsencrypt/live/k8s.sj.ifsc.edu.br/privkey.pem \
+  -n default
 ```
 
 ### SDS: [Longhorn](https://longhorn.io/)
@@ -207,5 +211,16 @@ helm install \
   headlamp headlamp/headlamp \
   --namespace headlamp \
   --create-namespace
+kubectl create token headlamp -n headlamp # Salvar para uso na interface Web
 kubectl port-forward -n headlamp service/headlamp 8080:80
 ```
+
+### Teste
+
+Apenas na primeira máquina:
+
+```sh
+kubectl apply -f teste.yaml
+```
+
+Com isso, deverão estar disponíveis os endereços `app1.k8s.sj.ifsc.edu.br` e `app2.k8s.sj.ifsc.edu.br` no navegador.
