@@ -162,7 +162,7 @@ Apenas na primeira máquina:
 
 ```sh
 sudo apt install certbot
-sudo certbot certonly --manual --preferred-challenges dns --email etorresini@ifsc.edu.br --agree-tos -d 'k8s.sj.ifsc.edu.br' -d '*.k8s.sj.ifsc.edu.br'
+sudo certbot certonly --manual --preferred-challenges dns --email etorresini@ifsc.edu.br --agree-tos -d '*.k8s.sj.ifsc.edu.br' -d 'k8s.sj.ifsc.edu.br'
 ```
 
 No processo, será criado um registro DNS para ser adicionado no servidor, o que permitirá criar o certificado digital. Uma vez criado, rodar na primeira máquina:
