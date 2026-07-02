@@ -87,13 +87,19 @@ sudo systemctl restart kubelet
 Apenas na primeira máquina:
 
 ```sh
-sudo kubeadm init --v=5 --config=kubeadm-config.yaml --upload-certs
+sudo kubeadm init --v=5 --config=k8s-0.yaml --upload-certs
 ```
 
-Ns demais máquinas, deve-se atualizar o arquivo do `kubeadm` com os valores informados pelo comando anterior e depois rodar:
+Ns demais máquinas, deve-se atualizar o arquivo do `kubeadm` com os valores informados pelo comando anterior e depois rodar na segunda máquina:
 
 ```sh
-sudo kubeadm join --v=5 --config=kubeadm-config.yaml
+sudo kubeadm join --v=5 --config=k8s-1.yaml
+```
+
+e na terceira máquina: 
+
+```sh
+sudo kubeadm join --v=5 --config=k8s-2.yaml
 ```
 
 Apenas na primeira máquina:
