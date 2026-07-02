@@ -142,9 +142,10 @@ rm hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
 cilium install \
   --set ipv6.enabled=true \
   --set ipv4.enabled=true \
+  --set ipam.mode=kubernetes \
   --set kubeProxyReplacement=true \
   --set gatewayAPI.enabled=true \
-  --set ipam.mode=kubernetes
+  --set gatewayAPI.service.type=NodePort
 kubectl delete daemonset kube-proxy -n kube-system
 #
 cilium status --wait

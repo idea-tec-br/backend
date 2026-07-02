@@ -40,7 +40,7 @@ metadata:
   annotations:
     io.cilium/gateway-service-type: "NodePort"
 spec:
-  gatewayClassName: cilium
+  gatewayClassName: cilium-nodeport
   listeners:
   - name: http
     protocol: HTTP
