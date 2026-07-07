@@ -124,43 +124,12 @@ Apenas na primeira máquina:
 kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.1/experimental-install.yaml
 ```
 
-### SDN: [_add-on_ de rede (CNI)](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network) [Cilium](https://docs.cilium.io/en/stable/gettingstarted/k8s-install-default/) com [Hubble](https://docs.cilium.io/en/stable/observability/hubble/setup/#hubble-setup)
+### Instalação de [_add-on_ de rede (CNI)](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network) [Flannel](https://github.com/flannel-io/flannel) com suporte a [pilha dupla](https://github.com/flannel-io/flannel/blob/master/Documentation/configuration.md)
 
 Apenas na primeira máquina:
 
 ```sh
-CILIUM_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt)
-CLI_ARCH=amd64
-if [ "$(uname -m)" = "aarch64" ]; then CLI_ARCH=arm64; fi
-curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
-sha256sum --check cilium-linux-${CLI_ARCH}.tar.gz.sha256sum
-sudo tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin
-rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
-#
-HUBBLE_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/hubble/main/stable.txt)
-HUBBLE_ARCH=amd64
-if [ "$(uname -m)" = "aarch64" ]; then HUBBLE_ARCH=arm64; fi
-curl -L --fail --remote-name-all https://github.com/cilium/hubble/releases/download/$HUBBLE_VERSION/hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
-sha256sum --check hubble-linux-${HUBBLE_ARCH}.tar.gz.sha256sum
-sudo tar xzvfC hubble-linux-${HUBBLE_ARCH}.tar.gz /usr/local/bin
-rm hubble-linux-${HUBBLE_ARCH}.tar.gz{,.sha256sum}
-#
-cilium install \
-  --set ipv6.enabled=true \
-  --set ipv4.enabled=true \
-  --set ipam.mode=kubernetes \
-  --set kubeProxyReplacement=true \
-  --set gatewayAPI.enabled=true \
-  --set gatewayAPI.service.type=NodePort
-kubectl delete daemonset kube-proxy -n kube-system
-#
-cilium status --wait
-#
-cilium hubble enable
-hubble status -P
-hubble observe -P
-#
-cilium connectivity test
+kubectl apply -f kube-flannel.yaml
 ```
 
 ### Criação do certificado digital único
