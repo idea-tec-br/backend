@@ -87,19 +87,19 @@ sudo systemctl restart kubelet
 Apenas na primeira máquina:
 
 ```sh
-sudo kubeadm init --v=5 --config=k8s-0.yaml --upload-certs
+sudo kubeadm init --config=k8s-0.yaml --upload-certs
 ```
 
 Ns demais máquinas, deve-se atualizar o arquivo do `kubeadm` com os valores informados pelo comando anterior e depois rodar na segunda máquina:
 
 ```sh
-sudo kubeadm join --v=5 --config=k8s-1.yaml
+sudo kubeadm join --config=k8s-1.yaml
 ```
 
 e na terceira máquina: 
 
 ```sh
-sudo kubeadm join --v=5 --config=k8s-2.yaml
+sudo kubeadm join --config=k8s-2.yaml
 ```
 
 Apenas na primeira máquina:
@@ -110,10 +110,17 @@ kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule-
 
 ### Helm
 
-Apenas na primeira máquina:
+Em todas as máquinas:
 
 ```sh
-curl -fsSL  https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4 | bash -
+HELM_BUILDKITE_APT_KEY_ID="DDF78C3E6EBB2D2CC223C95C62BA89D07698DBC6"
+sudo apt-get install curl gpg apt-transport-https --yes
+curl -fsSL https://packages.buildkite.com/helm-linux/helm-debian/gpgkey > "${TMPDIR:-/tmp}/helm.gpg"
+if [ "$(gpg --show-keys --with-colons "${TMPDIR:-/tmp}/helm.gpg" | awk -F: '$1 == "fpr" {print $10}' | head -n 1)" != "${HELM_BUILDKITE_APT_KEY_ID}" ]; then echo "ERROR: Unexpected Helm APT key ID: potential key compromise"; exit 1; fi
+cat "${TMPDIR:-/tmp}/helm.gpg" | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+echo "deb [signed-by=/usr/share/keyrings/helm.gpg] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+sudo apt-get update
+sudo apt-get install helm
 ```
 
 ### Gateway API
