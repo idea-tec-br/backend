@@ -172,7 +172,11 @@ Apenas a primeira máquina:
 
 ```sh
 kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.12.0/deploy/longhorn.yaml
-#
+```
+
+Em todas as máquinas:
+
+```sh
 curl -sSfL -o longhornctl https://github.com/longhorn/cli/releases/download/v1.12.0/longhornctl-linux-amd64
 chmod 755 longhornctl 
 sudo mv longhornctl /usr/local/bin
