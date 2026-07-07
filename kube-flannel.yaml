@@ -81,9 +81,10 @@ data:
     }
   net-conf.json: |
     {
-      "Network": "10.0.0.0/16",
       "EnableIPv6": true,
       "IPv6Network": "fc00::/48",
+      "EnableIPv4": true,
+      "Network": "10.0.0.0/16",
       "EnableNFTables": false,
       "Backend": {
         "Type": "vxlan"
