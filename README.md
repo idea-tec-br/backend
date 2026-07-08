@@ -123,14 +123,6 @@ sudo apt-get update
 sudo apt-get install helm
 ```
 
-### Gateway API
-
-Apenas na primeira máquina:
-
-```sh
-kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.1/experimental-install.yaml
-```
-
 ### Instalação de [_add-on_ de rede (CNI)](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network) [Flannel](https://github.com/flannel-io/flannel) com suporte a [pilha dupla](https://github.com/flannel-io/flannel/blob/master/Documentation/configuration.md)
 
 Apenas na primeira máquina:
@@ -139,44 +131,9 @@ Apenas na primeira máquina:
 kubectl apply -f kube-flannel.yaml
 ```
 
-### Metrics API
-
-Apenas na primeira máquina:
-
-```sh
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
-```
-
-### Criação do certificado digital único
-
-Apenas na primeira máquina:
-
-```sh
-sudo apt install certbot
-sudo certbot certonly --manual --preferred-challenges dns --email etorresini@ifsc.edu.br --agree-tos -d '*.k8s.sj.ifsc.edu.br' -d 'k8s.sj.ifsc.edu.br'
-```
-
-No processo, será criado um registro DNS para ser adicionado no servidor, o que permitirá criar o certificado digital. Uma vez criado, rodar na primeira máquina:
-
-```sh
-kubectl create secret tls wildcard-k8s-ifsc-tls \
-  --cert=/etc/letsencrypt/live/k8s.sj.ifsc.edu.br/fullchain.pem \
-  --key=/etc/letsencrypt/live/k8s.sj.ifsc.edu.br/privkey.pem \
-  -n default
-```
-
 ### SDS: [Longhorn](https://longhorn.io/)
 
-Todas as máquinas:
-
-```sh
-sudo apt install -y open-iscsi nfs-common util-linux cryptsetup dmsetup
-sudo systemctl enable --now iscsid
-sudo modprobe iscsi_tcp
-echo "iscsi_tcp" | sudo tee /etc/modules-load.d/iscsi.conf
-```
-
-Apenas a primeira máquina:
+Apenas na primeira máquina:
 
 ```sh
 kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.12.0/deploy/longhorn.yaml
@@ -185,9 +142,26 @@ kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.12.0/dep
 Em todas as máquinas:
 
 ```sh
+sudo apt install -y open-iscsi nfs-common util-linux cryptsetup dmsetup
+sudo systemctl enable --now iscsid
+sudo modprobe iscsi_tcp
+echo "iscsi_tcp" | sudo tee /etc/modules-load.d/iscsi.conf
+```
+
+Em todas as máquinas:
+
+```sh
 curl -sSfL -o longhornctl https://github.com/longhorn/cli/releases/download/v1.12.0/longhornctl-linux-amd64
 chmod 755 longhornctl 
 sudo mv longhornctl /usr/local/bin
+```
+
+### Metrics API
+
+Apenas na primeira máquina:
+
+```sh
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.8.1/components.yaml
 ```
 
 ### Acesso
@@ -209,13 +183,3 @@ helm install \
 kubectl create token headlamp -n headlamp # Salvar para uso na interface Web
 kubectl port-forward -n headlamp service/headlamp 8080:80
 ```
-
-### Teste
-
-Apenas na primeira máquina:
-
-```sh
-kubectl apply -f teste.yaml
-```
-
-Com isso, deverão estar disponíveis os endereços `app1.k8s.sj.ifsc.edu.br` e `app2.k8s.sj.ifsc.edu.br` no navegador.
