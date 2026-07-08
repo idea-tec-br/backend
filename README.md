@@ -191,3 +191,12 @@ helm install \
 kubectl create token headlamp -n headlamp # Salvar para uso na interface Web
 kubectl port-forward -n headlamp service/headlamp 8080:80
 ```
+
+### Testes
+
+Apenas na primeira máquina:
+
+```sh
+kubectl apply -f teste.yaml
+watch curl -v http://k8s.sj.ifsc.edu.br
+```

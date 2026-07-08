@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exemplo-app
+  namespace: default
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: exemplo-app
+  template:
+    metadata:
+      labels:
+        app: exemplo-app
+    spec:
+      containers:
+      - name: exemplo-app
+        image: nginxdemos/hello:plain-text
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: servico-exemplo-app
+  namespace: default
+spec:
+  selector:
+    app: exemplo-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: exemplo-ingress
+  namespace: default
+  annotations:
+spec:
+  ingressClassName: "nginx"
+  rules:
+  - host: k8s.sj.ifsc.edu.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: servico-exemplo-app
+            port:
+              number: 80
