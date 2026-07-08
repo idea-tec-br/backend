@@ -131,6 +131,14 @@ Apenas na primeira máquina:
 kubectl apply -f kube-flannel.yaml
 ```
 
+### [Ingress Controller](https://github.com/kubernetes/ingress-nginx)
+
+Apenas na primeira máquina:
+
+```sh
+kubectl apply -f ingress-deploy.yaml
+```
+
 ### SDS: [Longhorn](https://longhorn.io/)
 
 Apenas na primeira máquina:
