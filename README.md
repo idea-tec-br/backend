@@ -139,6 +139,14 @@ Apenas na primeira máquina:
 kubectl apply -f kube-flannel.yaml
 ```
 
+### Metrics API
+
+Apenas na primeira máquina:
+
+```sh
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+```
+
 ### Criação do certificado digital único
 
 Apenas na primeira máquina:
