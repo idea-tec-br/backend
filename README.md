@@ -10,6 +10,6 @@ Escolhido o Kubernetes para rodar as aplicações do _backend_.
 1. [Aplicativos básicos](03-aplicativos-basicos.md)
 1. [_Cluster_](04-cluster.md)
 1. [Gateway API](05-gateway-api.md)
-1. [CNI](05-cni.md)
+1. [CNI](06-cni.md)
 1. [Armazenamento](07-armazenamento.md)
 1. [Controle remoto](08-controle-remoto.md)
