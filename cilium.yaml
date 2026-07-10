@@ -11,6 +11,7 @@ ipam:
 envoy:
   enabled: true
   securityContext:
+    privileged: true
     capabilities:
       keepCapNetBindService: true
       envoy:
