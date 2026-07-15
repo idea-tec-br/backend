@@ -3,7 +3,6 @@ kind: Namespace
 metadata:
   name: teste-infra
 ---
-# 1. A Aplicação de Teste (Agnhost - ideal para inspecionar cabeçalhos de rede)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,7 +27,6 @@ spec:
         ports:
         - containerPort: 8080
 ---
-# 2. O Serviço Interno (Dual-Stack)
 apiVersion: v1
 kind: Service
 metadata:
@@ -44,9 +42,6 @@ spec:
   selector:
     app: app-teste
 ---
-# 3. A Definição da Gateway 
-# Como o Cilium está configurado com Host Network, este recurso instruirá o Cilium 
-# a escutar e bindar na porta 80 de todas as interfaces físicas (IPv4 e IPv6) das máquinas físicas.
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
@@ -62,7 +57,6 @@ spec:
       namespaces:
         from: Same
 ---
-# 4. A Rota HTTP que responde pelo seu domínio acadêmico
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:

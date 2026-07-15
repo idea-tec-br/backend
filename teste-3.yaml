@@ -3,6 +3,19 @@ kind: Namespace
 metadata:
   name: teste-infra
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: longhorn-test-pvc
+  namespace: teste-infra
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 1Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,13 +32,17 @@ spec:
         app: app-teste
     spec:
       containers:
-      - name: echoserver
-        image: registry.k8s.io/e2e-test-images/agnhost:2.43
-        args:
-        - netexec
-        - --http-port=8080
+      - name: web-server
+        image: nginx
+        volumeMounts:
+        - name: my-volume
+          mountPath: /usr/share/nginx/html
         ports:
-        - containerPort: 8080
+        - containerPort: 80
+      volumes:
+      - name: my-volume
+        persistentVolumeClaim:
+          claimName: longhorn-test-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -37,7 +54,7 @@ spec:
   ipFamilyPolicy: PreferDualStack
   ports:
   - port: 80
-    targetPort: 8080
+    targetPort: 80
     protocol: TCP
   selector:
     app: app-teste
