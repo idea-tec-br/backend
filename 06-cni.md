@@ -5,20 +5,14 @@ Escolhido o [Cilium](https://cilium.io/) como [_add-on_ de rede](https://kuberne
 ## Instalação
 
 ```sh
-# Instalação: Cilium
+# Instalação
 cilium install -f cilium.yaml
 kubectl delete daemonset kube-proxy -n kube-system
 #
-# Ativação: Hubble
-cilium hubble enable
-#
-# Monitoramento: Cilium
+# Monitoramento
 cilium status --wait
 #
-# Monitoramento: Hubble
-hubble status -P
-hubble observe -P
-#
-# Teste: Cilium + Hubble
+# Teste
 cilium connectivity test
+cilium connectivity test --cleanup
 ```

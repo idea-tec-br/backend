@@ -1,0 +1,125 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: teste-infra
+---
+# 1. A Aplicação de Teste (Agnhost - ideal para inspecionar cabeçalhos de rede e IPs de origem)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-teste
+  namespace: teste-infra
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: app-teste
+  template:
+    metadata:
+      labels:
+        app: app-teste
+    spec:
+      containers:
+      - name: echoserver
+        image: registry.k8s.io/e2e-test-images/agnhost:2.43
+        args:
+        - netexec
+        - --http-port=8080
+        ports:
+        - containerPort: 8080
+---
+# 2. O Serviço Interno (Dual-Stack)
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-teste
+  namespace: teste-infra
+spec:
+  type: ClusterIP
+  ipFamilyPolicy: PreferDualStack
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: app-teste
+---
+# 3. ClusterIssuer do Let's Encrypt (Desafio HTTP-01 integrado ao Gateway API)
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    # Insira seu e-mail institucional para receber alertas do Let's Encrypt
+    email: etorresini@ifsc.edu.br
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-prod-account-key
+    solvers:
+    - http01:
+        gatewayHTTPRoute:
+          parentRefs:
+          - name: gateway-infra
+            namespace: teste-infra
+---
+# 4. O Recurso de Certificado do cert-manager
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: teste-infra-tls
+  namespace: teste-infra
+spec:
+  secretName: teste-infra-tls-secret
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - "teste-infra.k8s.sj.ifsc.edu.br"
+---
+# 5. A Definição da Gateway (Configurada para HTTP na 80 e HTTPS na 443 em Host Network)
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: gateway-infra
+  namespace: teste-infra
+spec:
+  gatewayClassName: cilium
+  listeners:
+  - name: http
+    protocol: HTTP
+    port: 80
+    allowedRoutes:
+      namespaces:
+        from: Same
+  - name: https
+    protocol: HTTPS
+    port: 443
+    allowedRoutes:
+      namespaces:
+        from: Same
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: teste-infra-tls-secret
+---
+# 6. Rota HTTP e HTTPS Unificada
+# Esta rota responde tanto para requisições HTTP (porta 80) quanto HTTPS (porta 443)
+# permitindo testar ambos os protocolos simultaneamente sem redirecionamento compulsório.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: rota-teste-dupla
+  namespace: teste-infra
+spec:
+  parentRefs:
+  - name: gateway-infra
+    sectionName: http
+  - name: gateway-infra
+    sectionName: https
+  hostnames:
+  - "teste-infra.k8s.sj.ifsc.edu.br"
+  rules:
+  - backendRefs:
+    - name: svc-teste
+      port: 80

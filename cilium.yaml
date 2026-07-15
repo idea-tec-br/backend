@@ -4,6 +4,7 @@ ipv4:
   enabled: true
 gatewayAPI:
   enabled: true
+  enableAlpn: true
   hostNetwork:
     enabled: true
 ipam:
