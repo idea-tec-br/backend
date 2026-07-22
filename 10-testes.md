@@ -54,12 +54,12 @@ kubectl apply -f teste-3.yaml
 kubectl port-forward -n longhorn-system svc/longhorn-frontend 8080:80
 #
 # Modificação de arquivo
-kubectl exec -n teste-infra deployment app-teste -- sh -c "echo 'Gateway API + Cilium + cert-manager + Longhorn' > /usr/share/nginx/html/index.html"
+kubectl -n teste-infra exec deployments/app-teste -- sh -c "echo 'Gateway API + Cilium + cert-manager + Longhorn' > /usr/share/nginx/html/index.html"
 curl -4 -v --http2 https://teste-infra.k8s.sj.ifsc.edu.br
 curl -6 -v --http2 https://teste-infra.k8s.sj.ifsc.edu.br
 #
 # Recriação do deployment (todos os pods)
-kubectl rollout restart deployment app-teste
+kubectl -n teste-infra rollout restart deployment app-teste
 #
 # Verificação do conteúdo modificado
 curl -4 -v --http2 https://teste-infra.k8s.sj.ifsc.edu.br
