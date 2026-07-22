@@ -2,12 +2,12 @@
 
 Testes de integração entre os serviços.
 
-## HTTP (v1.0)
+## HTTP (v1.1)
 
 ```sh
 kubectl apply -f teste-0.yaml
-curl -4 -v --http1.0 http://teste-infra.k8s.sj.ifsc.edu.br
-curl -6 -v --http1.0 http://teste-infra.k8s.sj.ifsc.edu.br
+curl -4 -v --http1.1 http://teste-infra.k8s.sj.ifsc.edu.br
+curl -6 -v --http1.1 http://teste-infra.k8s.sj.ifsc.edu.br
 kubectl delete -f teste-0.yaml
 ```
 
