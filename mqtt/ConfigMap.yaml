@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mosquitto-config
+  namespace: feira-de-jogos
+data:
+  mosquitto.conf: |
+    allow_anonymous true
+    listener 1883
+    protocol mqtt
+    listener 8083
+    protocol websockets
