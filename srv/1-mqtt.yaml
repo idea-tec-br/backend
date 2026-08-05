@@ -1,13 +1,8 @@
 ---
 apiVersion: v1
-kind: Namespace
-metadata:
-  name: feira-de-jogos
----
-apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mosquitto-config
+  name: configmap-mosquitto
   namespace: feira-de-jogos
 data:
   mosquitto.conf: |
@@ -20,20 +15,20 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mqtt-broker
+  name: mosquitto
   namespace: feira-de-jogos
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mqtt-broker
+      app: mosquitto
   template:
     metadata:
       labels:
-        app: mqtt-broker
+        app: mosquitto
     spec:
       containers:
-        - name: mqtt-broker
+        - name: mosquitto
           image: eclipse-mosquitto
           ports:
             - containerPort: 1883
@@ -47,16 +42,16 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: mosquitto-config
+            name: configmap-mosquitto
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: mqtt-broker
+  name: service-mosquitto
   namespace: feira-de-jogos
 spec:
   selector:
-    app: mqtt-broker
+    app: mosquitto
   ports:
     - name: mqtt
       port: 8083
@@ -65,27 +60,27 @@ spec:
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: letsencrypt-prod
+  name: clusterissuer-mqtt
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
     email: etorresini@ifsc.edu.br
     privateKeySecretRef:
-      name: letsencrypt-prod-account-key
+      name: mqtt
     solvers:
       - http01:
           gatewayHTTPRoute:
             parentRefs:
-              - name: feira-gateway
+              - name: gateway-mosquitto
                 namespace: feira-de-jogos
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: feira-gateway
+  name: gateway-mosquitto
   namespace: feira-de-jogos
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    cert-manager.io/cluster-issuer: "clusterissuer-mqtt"
 spec:
   gatewayClassName: cilium
   listeners:
@@ -96,7 +91,7 @@ spec:
       tls:
         mode: Terminate
         certificateRefs:
-          - name: feira-jogos-tls-secret
+          - name: certificate-mqtt
       allowedRoutes:
         namespaces:
           from: Same
@@ -111,15 +106,15 @@ spec:
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: mqtt-route
+  name: httproute-mqtt
   namespace: feira-de-jogos
 spec:
   parentRefs:
-    - name: feira-gateway
+    - name: gateway-mosquitto
       sectionName: https
   hostnames:
     - "mqtt.k8s.sj.ifsc.edu.br"
   rules:
     - backendRefs:
-        - name: mqtt-broker
+        - name: mosquitto
           port: 8083
