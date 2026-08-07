@@ -28,11 +28,17 @@ sudo modprobe iscsi_tcp
 #
 # Serviços: atualização
 sudo systemctl restart iscsid
+#
+# Verificação do estado da máquina
+longhornctl --kubeconfig=$HOME/.kube/config check preflight
 ```
 
 Executar em qualquer máquina:
 
 ```sh
+# Instalação
 kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.12.0/deploy/longhorn.yaml
-longhornctl --kubeconfig=$HOME/.kube/config check preflight
+#
+# Visualização local da interface Web
+kubectl port-forward -n longhorn-system svc/longhorn-frontend 8080:80 
 ```
