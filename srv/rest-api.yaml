@@ -1,0 +1,22 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rest-api
+  namespace: feira-de-jogos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rest-api
+  template:
+    metadata:
+      labels:
+        app: rest-api
+    spec:
+      containers:
+        - name: rest-api
+          image: ghcr.io/feira-de-jogos/feira-de-jogos/rest-api:latest
+          envFrom:
+          - secretRef:
+              name: secret-rest-api

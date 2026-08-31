@@ -13,7 +13,13 @@ O arquivo `mqtt.yaml` tem todos os recursos necessários.
 
 ## TSDB: InfluxDB
 
-Além do arquivo `tsdb.yaml`, O InfluxDB requer um `Secret` para operar, no seguinte formato:
+Além do arquivo `tsdb.yaml`, O InfluxDB requer um `Secret` para operar.
+
+## REST API
+
+Além do arquivo `rest-api.yaml`, o REST API requer um `Secret` para operar.
+
+## Secrets
 
 ```yaml
 ---
@@ -23,10 +29,37 @@ metadata:
   name: secret-influxdb
   namespace: feira-de-jogos
 type: Opaque
-data:
-  influxdb-username: ZmVpcmE= # echo -n 'feira' | base64
-  influxdb-password: ZmVpcmE= # echo -n 'feira' | base64
-  influxdb-admin-token: ZmVpcmE= # echo -n 'feira' | base64
+stringData:
+  influxdb-admin-token: <token>
+  influxdb-password: <password>
+  influxdb-username: <username>
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secret-rest-api
+  namespace: feira-de-jogos
+type: Opaque
+stringData:
+  PGHOST: <hostname>
+  PGPORT: <port>
+  PGDATABASE: <database>
+  PGUSER: <username>
+  PGPASSWORD: <passqord>
+  PORT: <port>
+  GOOGLE_CLIENT_ID: <list>
+  GOOGLE_CLIENT_ID_GAMES: <list>
+  GOOGLE_CLIENT_ID_GAMES_20241: <list>
+  TOKEN_SECRET_KEY_ARCADE: <key>
+  TOKEN_SECRET_KEY_VENDING_MACHINE: <key>
+  MQTT_BROKER_URL: <url>
+  MQTT_CLIENT_ID: <id>
+  MQTT_TOPIC_STATUS: <topic>
+  MQTT_TOPIC_COMANDO_ID_1: <topic>
+  MQTT_TOPIC_COMANDO_ID_2: <topic>
+  MQTT_TOPIC_ESTOQUE_SET_ID_1: <topic>
+  MQTT_TOPIC_ESTOQUE_SET_ID_2: <topic>
+  MQTT_TOPIC_ESTOQUE_REQUEST: <topic>
+  MQTT_MACHINE_ID_1: <id>
+  MQTT_MACHINE_ID_2: <id>
 ```
-
-onde `influxdb-password` e `influxdb-admin-token` devem ser atualizados.
