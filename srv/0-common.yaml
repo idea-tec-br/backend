@@ -24,6 +24,9 @@ spec:
               - name: gateway-feira-de-jogos
                 sectionName: https-tsdb
                 namespace: feira-de-jogos
+              - name: gateway-feira-de-jogos
+                sectionName: https-rest-api
+                namespace: feira-de-jogos
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
@@ -60,6 +63,17 @@ spec:
         mode: Terminate
         certificateRefs:
           - name: certificate-tsdb
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https-rest-api
+      protocol: HTTPS
+      port: 443
+      hostname: "feira-de-jogos.dev.br"
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: certificate-rest-api
       allowedRoutes:
         namespaces:
           from: Same

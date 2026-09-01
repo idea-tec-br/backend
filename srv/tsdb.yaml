@@ -30,28 +30,9 @@ spec:
       containers:
         - name: influxdb
           image: influxdb:2
-          env:
-            - name: DOCKER_INFLUXDB_INIT_MODE
-              value: "setup"
-            - name: DOCKER_INFLUXDB_INIT_ORG
-              value: "feira"
-            - name: DOCKER_INFLUXDB_INIT_BUCKET
-              value: "feira"
-            - name: DOCKER_INFLUXDB_INIT_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: secret-influxdb
-                  key: influxdb-username
-            - name: DOCKER_INFLUXDB_INIT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: secret-influxdb
-                  key: influxdb-password
-            - name: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: secret-influxdb
-                  key: influxdb-admin-token
+          envFrom:
+          - secretRef:
+              name: secret-influxdb
           ports:
             - containerPort: 8086
           livenessProbe:
