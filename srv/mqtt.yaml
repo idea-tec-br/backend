@@ -5,12 +5,25 @@ metadata:
   name: configmap-mosquitto
   namespace: feira-de-jogos
 data:
+  acl.conf: |
+    user unity
+    topic read bombexe/+/server/unity
+    topic write bombexe/+/unity/server
+    user bomba
+    topic read bombexe/+/server/bomba
+    topic write bombexe/+/bomba/server
+    user servidor_jogo
+    topic write bombexe/+/server/unity
+    topic read bombexe/+/unity/server
+    topic write bombexe/+/server/bomba
+    topic read bombexe/+/bomba/server
   mosquitto.conf: |
     allow_anonymous true
     listener 1883
     protocol mqtt
     listener 8083
     protocol websockets
+    acl_file /mosquitto/config/acl.conf
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -36,6 +49,9 @@ spec:
             - containerPort: 8083
               name: mqtt-ws
           volumeMounts:
+            - name: config
+              mountPath: /mosquitto/config/acl.conf
+              subPath: acl.conf
             - name: config
               mountPath: /mosquitto/config/mosquitto.conf
               subPath: mosquitto.conf
@@ -67,7 +83,7 @@ spec:
     - name: gateway-feira-de-jogos
       sectionName: https-mqtt
   hostnames:
-    - "mqtt.k8s.sj.ifsc.edu.br"
+    - "mqtt.feira-de-jogos.dev.br"
   rules:
     - backendRefs:
         - name: service-mosquitto

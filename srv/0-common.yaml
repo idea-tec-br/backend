@@ -44,7 +44,7 @@ spec:
     - name: https-mqtt
       protocol: HTTPS
       port: 443
-      hostname: "mqtt.k8s.sj.ifsc.edu.br"
+      hostname: "mqtt.feira-de-jogos.dev.br"
       tls:
         mode: Terminate
         certificateRefs:
@@ -55,7 +55,7 @@ spec:
     - name: https-tsdb
       protocol: HTTPS
       port: 443
-      hostname: "tsdb.k8s.sj.ifsc.edu.br"
+      hostname: "tsdb.feira-de-jogos.dev.br"
       tls:
         mode: Terminate
         certificateRefs:

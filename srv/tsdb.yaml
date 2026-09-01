@@ -94,7 +94,7 @@ spec:
     - name: gateway-feira-de-jogos
       sectionName: https-tsdb
   hostnames:
-    - "tsdb.k8s.sj.ifsc.edu.br"
+    - "tsdb.feira-de-jogos.dev.br"
   rules:
     - backendRefs:
         - name: service-influxdb
