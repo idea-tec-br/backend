@@ -9,7 +9,7 @@ O arquivo `0-common.yaml` possui recursos destinados a todos os serviços:
 
 ## MQTT: Mosquitto
 
-O arquivo `mqtt.yaml` tem todos os recursos necessários.
+Além do arquivo `mqtt.yaml` o Mosquitto requer um `Secret` para operar.
 
 ## TSDB: InfluxDB
 
@@ -22,6 +22,16 @@ Além do arquivo `rest-api.yaml`, o REST API requer um `Secret` para operar.
 ## Secrets
 
 ```yaml
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secret-mosquitto
+  namespace: feira-de-jogos
+type: Opaque
+stringData:
+  passwd: |
+    <valor>
 ---
 apiVersion: v1
 kind: Secret

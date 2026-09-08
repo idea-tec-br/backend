@@ -49,13 +49,21 @@ spec:
             - containerPort: 8083
               name: mqtt-ws
           volumeMounts:
+            - name: passwd
+              mountPath: /mosquitto/passwd
+              readOnly: true
             - name: config
               mountPath: /mosquitto/config/acl.conf
               subPath: acl.conf
+              readOnly: true
             - name: config
               mountPath: /mosquitto/config/mosquitto.conf
               subPath: mosquitto.conf
+              readOnly: true
       volumes:
+        - name: passwd
+          secret:
+            secretName: secret-mosquitto
         - name: config
           configMap:
             name: configmap-mosquitto
