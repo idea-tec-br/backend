@@ -9,17 +9,7 @@ O arquivo `0-common.yaml` possui recursos destinados a todos os serviços:
 
 ## MQTT: Mosquitto
 
-Além do arquivo `mqtt.yaml` o Mosquitto requer um `Secret` para operar.
-
-## TSDB: InfluxDB
-
-Além do arquivo `tsdb.yaml`, O InfluxDB requer um `Secret` para operar.
-
-## REST API
-
-Além do arquivo `rest-api.yaml`, o REST API requer um `Secret` para operar.
-
-## Secrets
+Além do arquivo `mqtt.yaml`, o Mosquitto requer um `Secret` para operar:
 
 ```yaml
 ---
@@ -32,6 +22,13 @@ type: Opaque
 stringData:
   passwd: |
     <valor>
+```
+
+## TSDB: InfluxDB
+
+Além do arquivo `tsdb.yaml`, O InfluxDB requer um `Secret` para operar:
+
+```yaml
 ---
 apiVersion: v1
 kind: Secret
@@ -46,6 +43,28 @@ stringData:
   DOCKER_INFLUXDB_INIT_USERNAME: <valor>
   DOCKER_INFLUXDB_INIT_PASSWORD: <valor>
   DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: <valor>
+```
+
+## REST API
+
+Além do arquivo `rest-api.yaml`, o PostgreSQL requer um `Secret` para operar:
+
+```yaml
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secret-db
+  namespace: feira-de-jogos
+stringData:
+  POSTGRES_DB: <valor>
+  POSTGRES_USER: <valor>
+  POSTGRES_PASSWORD: <valor>
+```
+
+A REST API também requer um `Secret`:
+
+```yaml
 ---
 apiVersion: v1
 kind: Secret
@@ -75,14 +94,4 @@ stringData:
   MQTT_TOPIC_ESTOQUE_REQUEST: <valor>
   MQTT_MACHINE_ID_1: <valor>
   MQTT_MACHINE_ID_2: <valor>
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: secret-db
-  namespace: feira-de-jogos
-stringData:
-  POSTGRES_DB: <valor>
-  POSTGRES_USER: <valor>
-  POSTGRES_PASSWORD: <valor>
 ```
